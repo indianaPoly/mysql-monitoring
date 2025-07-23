@@ -1,3 +1,4 @@
 .env
 mysql/mysql_data/*
 mysqld-exporter/my.cnf
+apiServer/__pycache__
