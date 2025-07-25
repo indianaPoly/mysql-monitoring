@@ -1,0 +1,51 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - "13306:3306"
+    networks:
+      - monitor_net
+
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    platform: linux/amd64
+    ports:
+      - "18080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306 # internal container
+    depends_on:
+      - mysql
+    networks:
+      - monitor_net
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter
+    container_name: mysqld_exporter
+    volumes:
+      - ./mysqld-exporter/my.cnf:/etc/mysql/my.cnf:ro
+    depends_on:
+      - mysql
+    ports:
+      - "19104:9104"
+    command: ["--config.my-cnf=/etc/mysql/my.cnf"]
+    networks:
+      - monitor_net
+
+networks:
+  monitor_net:
+    external: true
+
+volumes:
+  mysql_data:

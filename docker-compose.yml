@@ -25,6 +25,13 @@ services:
     depends_on:
       - mysql
 
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node_exporter
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+
   mysqld-exporter:
     image: prom/mysqld-exporter
     container_name: mysqld_exporter
